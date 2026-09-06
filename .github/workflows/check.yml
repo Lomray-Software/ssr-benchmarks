@@ -18,10 +18,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      # The build generates files that lint and types resolve (TanStack's routeTree.gen.ts).
+      - run: npm run build
       - run: npm run lint
       - run: npm run format:check
       - run: npm test
-      - run: npm run build
       - run: npm run verify:parity
       - run: npm run smoke -- --seconds 10
       - name: Smoke orchestrator and README renderer
