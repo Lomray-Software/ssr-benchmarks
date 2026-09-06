@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '04:00'
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    commit-message:
+      prefix: 'chore(deps)'
+    groups:
+      frameworks:
+        patterns: ['@lomray/vite-ssr-boost', 'react-router', '@react-router/*', 'vike', 'vike-react', '@tanstack/*', 'next', 'react', 'react-dom']
+        update-types: [major, minor, patch]
+      tooling:
+        patterns: ['*']
+        exclude-patterns: ['@lomray/vite-ssr-boost', 'react-router', '@react-router/*', 'vike', 'vike-react', '@tanstack/*', 'next', 'react', 'react-dom']
+        update-types: [minor, patch]
