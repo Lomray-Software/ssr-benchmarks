@@ -26,7 +26,7 @@
     "@lomray/eslint-config": "7.0.0",
     "@lomray/eslint-config-react": "7.0.0",
     "@lomray/prettier-config": "3.0.0",
-    "@types/node": "22.20.1",
+    "@types/node": "26.4.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
     "eslint": "10.10.0",
