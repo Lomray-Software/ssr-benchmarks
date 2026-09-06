@@ -1,0 +1,1117 @@
+{
+  "schemaVersion": 1,
+  "framework": "tanstack-start",
+  "label": "TanStack Start",
+  "generatedAt": "2026-09-06T06:06:32.516Z",
+  "mode": "quick",
+  "status": "complete",
+  "environment": {
+    "node": "v22.23.2",
+    "npm": "npm/10.9.8 node/v22.23.2 darwin arm64 workspaces/false",
+    "cpu": {
+      "model": "Apple M3 Pro",
+      "logicalCores": 12
+    },
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "totalMemoryBytes": 38654705664,
+    "versions": {
+      "@tanstack/react-start": "1.168.49",
+      "@tanstack/react-router": "1.170.32",
+      "nitro": "3.0.260903-beta",
+      "vite": "8.2.2",
+      "react": "19.2.8",
+      "react-dom": "19.2.8",
+      "playwright": "1.63.0"
+    },
+    "nextBundledReact": null,
+    "lockfileSha256": "d65011538e8559c7cdfb236b32c19cf7118de1d0b5228868d32c5e05de03d7b7",
+    "sourceSha256": "e87e50ef9b697cbc3901bdf17e56d307cf1edc3f79a83aae22443f5eb95b46a4",
+    "gitCommit": null,
+    "ci": false,
+    "runner": null,
+    "githubRunUrl": null,
+    "chromium": "153.0.8010.12"
+  },
+  "application": {
+    "streaming": true,
+    "notes": "File routes and server functions; documented Nitro Node adapter.",
+    "clientEntryPattern": "/assets/index-[^/]+\\.js$"
+  },
+  "rawFile": "2026-09-06/tanstack-start.json",
+  "ttfb": {
+    "routes": {
+      "/": {
+        "warmup": 5,
+        "requests": 30,
+        "concurrency": 10,
+        "elapsedMs": 25.044957999998587,
+        "ttfbMs": {
+          "p50": 4.3883330000026035,
+          "p95": 24.174458000001323,
+          "p99": 24.719624999997905
+        },
+        "fullResponseMs": {
+          "p50": 4.411583000000974,
+          "p95": 24.20133299999725,
+          "p99": 24.743791000000783
+        },
+        "bodyBytes": {
+          "total": 51360,
+          "p50": 1712,
+          "p95": 1712,
+          "p99": 1712
+        },
+        "headerBytes": {
+          "total": 5070
+        },
+        "samples": [
+          {
+            "ttfbMs": 1.8279580000016722,
+            "fullResponseMs": 1.8751249999986612,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.030957999995735,
+            "fullResponseMs": 3.0590420000007725,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 6.378042000003916,
+            "fullResponseMs": 6.40479200000118,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 7.7462089999971795,
+            "fullResponseMs": 7.770208999994793,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 8.517959000004339,
+            "fullResponseMs": 8.54120900000271,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 13.506874999999127,
+            "fullResponseMs": 13.531957999999577,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 17.29020799999853,
+            "fullResponseMs": 17.36149999999907,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 21.851416999998037,
+            "fullResponseMs": 21.86750000000029,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 24.174458000001323,
+            "fullResponseMs": 24.20133299999725,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 24.719624999997905,
+            "fullResponseMs": 24.743791000000783,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 11.103499999997439,
+            "fullResponseMs": 11.128124999995634,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 6.564666999998735,
+            "fullResponseMs": 6.594417000000249,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.834415999997873,
+            "fullResponseMs": 3.872332999999344,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.10095800000272,
+            "fullResponseMs": 3.1394169999985024,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.523790999999619,
+            "fullResponseMs": 3.5650000000023283,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.543375000001106,
+            "fullResponseMs": 4.56170800000109,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.382458000000042,
+            "fullResponseMs": 4.398583000001963,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.3883330000026035,
+            "fullResponseMs": 4.411583000000974,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.8944590000028256,
+            "fullResponseMs": 3.9904999999998836,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.780790999997407,
+            "fullResponseMs": 3.8274579999997513,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 7.929834000002302,
+            "fullResponseMs": 7.945791999998619,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.6291669999991427,
+            "fullResponseMs": 3.667874999999185,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.6754579999978887,
+            "fullResponseMs": 3.699332999996841,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.7649160000000848,
+            "fullResponseMs": 3.7995410000003176,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.993957999999111,
+            "fullResponseMs": 4.048750000001746,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.243084000001545,
+            "fullResponseMs": 4.2653340000033495,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 6.396708000000217,
+            "fullResponseMs": 6.413541000001715,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.549375000002328,
+            "fullResponseMs": 4.564082999997481,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.535334000000148,
+            "fullResponseMs": 4.553334000003815,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.185583999998926,
+            "fullResponseMs": 4.199625000001106,
+            "bodyBytes": 1712,
+            "headerBytes": 169,
+            "status": 200
+          }
+        ]
+      },
+      "/items": {
+        "warmup": 5,
+        "requests": 30,
+        "concurrency": 10,
+        "elapsedMs": 355.2618749999965,
+        "ttfbMs": {
+          "p50": 114.95516599999974,
+          "p95": 123.11012499999924,
+          "p99": 123.16729099999793
+        },
+        "fullResponseMs": {
+          "p50": 115.00108299999556,
+          "p95": 123.18675000000076,
+          "p99": 123.18779099999665
+        },
+        "bodyBytes": {
+          "total": 181320,
+          "p50": 6044,
+          "p95": 6044,
+          "p99": 6044
+        },
+        "headerBytes": {
+          "total": 5070
+        },
+        "samples": [
+          {
+            "ttfbMs": 104.51758300000074,
+            "fullResponseMs": 104.64587500000198,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 106.79816600000049,
+            "fullResponseMs": 106.9161660000027,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 108.85695800000394,
+            "fullResponseMs": 108.99120799999946,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 111.32841699999699,
+            "fullResponseMs": 111.45087500000227,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 112.43216699999903,
+            "fullResponseMs": 112.47612500000105,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 113.05170799999905,
+            "fullResponseMs": 113.07549999999901,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 113.68108299999585,
+            "fullResponseMs": 113.77024999999412,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 114.51525000000402,
+            "fullResponseMs": 114.56083300000319,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 117.40154199999961,
+            "fullResponseMs": 117.46920900000259,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 118.26308300000528,
+            "fullResponseMs": 118.3251670000027,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 115.2086249999993,
+            "fullResponseMs": 115.40020899999945,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 117.01387500000419,
+            "fullResponseMs": 117.24304200000188,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 118.40408399999433,
+            "fullResponseMs": 118.6237919999985,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 120.84204200000386,
+            "fullResponseMs": 121.00845900000422,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 121.59133300000394,
+            "fullResponseMs": 121.67612500000541,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 122.43766599999799,
+            "fullResponseMs": 122.52458299999853,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 123.11012499999924,
+            "fullResponseMs": 123.18675000000076,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 123.16729099999793,
+            "fullResponseMs": 123.18779099999665,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 120.8527499999982,
+            "fullResponseMs": 120.93312499999593,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 120.78041700000176,
+            "fullResponseMs": 120.83716699999786,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 113.01179100000445,
+            "fullResponseMs": 113.17662500000006,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 111.56783400000131,
+            "fullResponseMs": 111.93870900000184,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 116.51595900000393,
+            "fullResponseMs": 116.70550000000367,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 113.99262499999895,
+            "fullResponseMs": 114.18933300000208,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 114.69774999999936,
+            "fullResponseMs": 114.83899999999994,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 114.78062499999942,
+            "fullResponseMs": 114.89212499999849,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 114.4250830000019,
+            "fullResponseMs": 114.47766599999886,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 114.95516599999974,
+            "fullResponseMs": 115.00108299999556,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 115.32654199999524,
+            "fullResponseMs": 115.3682919999992,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 115.58470800000214,
+            "fullResponseMs": 115.66266599999653,
+            "bodyBytes": 6044,
+            "headerBytes": 169,
+            "status": 200
+          }
+        ]
+      },
+      "/items/1": {
+        "warmup": 5,
+        "requests": 30,
+        "concurrency": 10,
+        "elapsedMs": 2438.9899580000056,
+        "ttfbMs": {
+          "p50": 5.483249999997497,
+          "p95": 12.456874999996217,
+          "p99": 12.87383299999783
+        },
+        "fullResponseMs": {
+          "p50": 807.5945839999986,
+          "p95": 825.3868749999965,
+          "p99": 825.489916999999
+        },
+        "bodyBytes": {
+          "total": 96450,
+          "p50": 3215,
+          "p95": 3215,
+          "p99": 3215
+        },
+        "headerBytes": {
+          "total": 5070
+        },
+        "samples": [
+          {
+            "ttfbMs": 3.4094159999949625,
+            "fullResponseMs": 806.5922910000008,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.588499999998021,
+            "fullResponseMs": 807.5945839999986,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 5.602333000002545,
+            "fullResponseMs": 808.6867080000011,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 7.252999999996973,
+            "fullResponseMs": 821.8745409999974,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 8.426957999996375,
+            "fullResponseMs": 822.247540999997,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 9.46466700000019,
+            "fullResponseMs": 822.4610420000026,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 10.204707999997481,
+            "fullResponseMs": 825.1845419999954,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 11.262957999999344,
+            "fullResponseMs": 825.352082999998,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 12.171290999998746,
+            "fullResponseMs": 825.3868749999965,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 12.87383299999783,
+            "fullResponseMs": 825.489916999999,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 9.03466599999956,
+            "fullResponseMs": 809.6660409999968,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 11.203708000000915,
+            "fullResponseMs": 810.0692080000008,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 12.456874999996217,
+            "fullResponseMs": 817.4753329999949,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 2.30408300000272,
+            "fullResponseMs": 805.4915830000027,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 2.883208999999624,
+            "fullResponseMs": 805.7178749999948,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.703416999996989,
+            "fullResponseMs": 805.7792079999999,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.2850409999955446,
+            "fullResponseMs": 808.3109160000022,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 5.052999999999884,
+            "fullResponseMs": 809.2801669999972,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 5.915667000001122,
+            "fullResponseMs": 809.3570000000036,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 6.436000000001513,
+            "fullResponseMs": 809.4407080000019,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 5.42791600000055,
+            "fullResponseMs": 805.1623749999999,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 7.7934170000007725,
+            "fullResponseMs": 806.726042000002,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 4.857165999994322,
+            "fullResponseMs": 804.4456659999996,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 5.136417000001529,
+            "fullResponseMs": 804.7844590000022,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 5.483249999997497,
+            "fullResponseMs": 804.3806659999973,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 6.36845799999719,
+            "fullResponseMs": 806.6265419999982,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 2.55800000000454,
+            "fullResponseMs": 801.4795000000013,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 2.2792499999995925,
+            "fullResponseMs": 801.8008330000011,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 2.829458000000159,
+            "fullResponseMs": 803.3319580000025,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          },
+          {
+            "ttfbMs": 3.5737089999965974,
+            "fullResponseMs": 803.3172500000001,
+            "bodyBytes": 3215,
+            "headerBytes": 169,
+            "status": 200
+          }
+        ]
+      }
+    },
+    "protocol": "HTTP/1.1 keep-alive, identity encoding, headers-received TTFB; no pipelining",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"
+  },
+  "memory": {
+    "pid": 52396,
+    "rssBytes": 98271232,
+    "measuredAt": "2026-09-06T06:07:34.927Z",
+    "method": "process.memoryUsage.rss() in the listening Node process, immediately after TTFB; no forced GC"
+  },
+  "httpParity": {
+    "/": {
+      "text": "Home Items SSR benchmark A small React application with server-rendered data. Count: 0",
+      "textSha256": "cfe26a309369f58dbb6655c273b11ec658a910b4076fb71b1b3367df8621230a",
+      "fullMs": 4.934375000004366,
+      "immediateMs": null,
+      "deferredMs": null
+    },
+    "/items": {
+      "text": "Home Items Items 50 items, loaded on the server. Item 01 Item 02 Item 03 Item 04 Item 05 Item 06 Item 07 Item 08 Item 09 Item 10 Item 11 Item 12 Item 13 Item 14 Item 15 Item 16 Item 17 Item 18 Item 19 Item 20 Item 21 Item 22 Item 23 Item 24 Item 25 Item 26 Item 27 Item 28 Item 29 Item 30 Item 31 Item 32 Item 33 Item 34 Item 35 Item 36 Item 37 Item 38 Item 39 Item 40 Item 41 Item 42 Item 43 Item 44 Item 45 Item 46 Item 47 Item 48 Item 49 Item 50",
+      "textSha256": "e0b52e41c5dc3976043c32298a7f70bdced1455992b9904fe8c25fa6b1357527",
+      "fullMs": 106.05583299999853,
+      "immediateMs": null,
+      "deferredMs": null
+    },
+    "/items/1": {
+      "text": "Home Items Item 01 Available immediately. Details for item 01.",
+      "textSha256": "4c423691263f8cba98cf0ad9bdbb8974cfe90e30e88bd3443c0dbf89c8a3061a",
+      "fullMs": 805.708166000004,
+      "immediateMs": 2.366708000001381,
+      "deferredMs": 805.4170000000013
+    }
+  },
+  "sizes": {
+    "routes": {
+      "/": {
+        "gzipBytes": 102377,
+        "externalGzipBytes": 101940,
+        "inlineGzipBytes": 437,
+        "externalBytes": 319255,
+        "inlineBytes": 725,
+        "requests": [
+          {
+            "url": "/assets/index-CBPDSzRe.js",
+            "bytes": 309297,
+            "gzipBytes": 98161
+          },
+          {
+            "url": "/assets/routes-sBQoldGr.js",
+            "bytes": 68,
+            "gzipBytes": 83
+          },
+          {
+            "url": "/assets/ui-DTQGj5ID.js",
+            "bytes": 9890,
+            "gzipBytes": 3696
+          }
+        ],
+        "inlineScripts": [
+          {
+            "bytes": 725,
+            "gzipBytes": 437
+          }
+        ]
+      },
+      "/items": {
+        "gzipBytes": 102839,
+        "externalGzipBytes": 102016,
+        "inlineGzipBytes": 823,
+        "externalBytes": 319357,
+        "inlineBytes": 2254,
+        "requests": [
+          {
+            "url": "/assets/index-CBPDSzRe.js",
+            "bytes": 309297,
+            "gzipBytes": 98161
+          },
+          {
+            "url": "/assets/items.index-BKQ5K1pk.js",
+            "bytes": 170,
+            "gzipBytes": 159
+          },
+          {
+            "url": "/assets/ui-DTQGj5ID.js",
+            "bytes": 9890,
+            "gzipBytes": 3696
+          }
+        ],
+        "inlineScripts": [
+          {
+            "bytes": 2254,
+            "gzipBytes": 823
+          }
+        ]
+      },
+      "/items/1": {
+        "gzipBytes": 103425,
+        "externalGzipBytes": 102107,
+        "inlineGzipBytes": 1318,
+        "externalBytes": 319549,
+        "inlineBytes": 2078,
+        "requests": [
+          {
+            "url": "/assets/index-CBPDSzRe.js",
+            "bytes": 309297,
+            "gzipBytes": 98161
+          },
+          {
+            "url": "/assets/items._id-DxD_tA1l.js",
+            "bytes": 362,
+            "gzipBytes": 250
+          },
+          {
+            "url": "/assets/ui-DTQGj5ID.js",
+            "bytes": 9890,
+            "gzipBytes": 3696
+          }
+        ],
+        "inlineScripts": [
+          {
+            "bytes": 994,
+            "gzipBytes": 588
+          },
+          {
+            "bytes": 57,
+            "gzipBytes": 74
+          },
+          {
+            "bytes": 845,
+            "gzipBytes": 500
+          },
+          {
+            "bytes": 182,
+            "gzipBytes": 156
+          }
+        ]
+      }
+    },
+    "emitted": {
+      "total": {
+        "bytes": 1331197,
+        "gzipBytes": 327433,
+        "files": [
+          {
+            "file": ".output/public/assets/index-CBPDSzRe.js",
+            "bytes": 309297,
+            "gzipBytes": 98161
+          },
+          {
+            "file": ".output/public/assets/items._id-DxD_tA1l.js",
+            "bytes": 362,
+            "gzipBytes": 250
+          },
+          {
+            "file": ".output/public/assets/items.index-BKQ5K1pk.js",
+            "bytes": 170,
+            "gzipBytes": 159
+          },
+          {
+            "file": ".output/public/assets/routes-sBQoldGr.js",
+            "bytes": 68,
+            "gzipBytes": 83
+          },
+          {
+            "file": ".output/public/assets/ui-DTQGj5ID.js",
+            "bytes": 9890,
+            "gzipBytes": 3696
+          },
+          {
+            "file": ".output/server/_chunks/ssr-renderer.mjs",
+            "bytes": 977,
+            "gzipBytes": 493
+          },
+          {
+            "file": ".output/server/_libs/@tanstack/react-router+[...].mjs",
+            "bytes": 679241,
+            "gzipBytes": 141936
+          },
+          {
+            "file": ".output/server/_libs/@tanstack/router-core+[...].mjs",
+            "bytes": 122896,
+            "gzipBytes": 25630
+          },
+          {
+            "file": ".output/server/_libs/h3+rou3+srvx.mjs",
+            "bytes": 39846,
+            "gzipBytes": 10535
+          },
+          {
+            "file": ".output/server/_libs/h3-v2+rou3+srvx.mjs",
+            "bytes": 18294,
+            "gzipBytes": 4979
+          },
+          {
+            "file": ".output/server/_libs/hookable.mjs",
+            "bytes": 1166,
+            "gzipBytes": 513
+          },
+          {
+            "file": ".output/server/_libs/srvx.mjs",
+            "bytes": 39923,
+            "gzipBytes": 10335
+          },
+          {
+            "file": ".output/server/_libs/tanstack__history.mjs",
+            "bytes": 12044,
+            "gzipBytes": 3454
+          },
+          {
+            "file": ".output/server/_libs/ufo.mjs",
+            "bytes": 2195,
+            "gzipBytes": 716
+          },
+          {
+            "file": ".output/server/_runtime.mjs",
+            "bytes": 1560,
+            "gzipBytes": 731
+          },
+          {
+            "file": ".output/server/_ssr/data-DFZNnCTh.mjs",
+            "bytes": 5697,
+            "gzipBytes": 1254
+          },
+          {
+            "file": ".output/server/_ssr/empty-plugin-adapters-CykxgOdX.mjs",
+            "bytes": 230,
+            "gzipBytes": 166
+          },
+          {
+            "file": ".output/server/_ssr/items._id-_nfEw021.mjs",
+            "bytes": 939,
+            "gzipBytes": 444
+          },
+          {
+            "file": ".output/server/_ssr/items.index-CLrveOyz.mjs",
+            "bytes": 423,
+            "gzipBytes": 292
+          },
+          {
+            "file": ".output/server/_ssr/router-DPwrvOoh.mjs",
+            "bytes": 6302,
+            "gzipBytes": 2000
+          },
+          {
+            "file": ".output/server/_ssr/routes-CWcBor1d.mjs",
+            "bytes": 200,
+            "gzipBytes": 165
+          },
+          {
+            "file": ".output/server/_ssr/ssr.mjs",
+            "bytes": 67233,
+            "gzipBytes": 17199
+          },
+          {
+            "file": ".output/server/_ssr/start-BRont_2I.mjs",
+            "bytes": 140,
+            "gzipBytes": 130
+          },
+          {
+            "file": ".output/server/_tanstack-start-manifest_v-BqxUEHtu.mjs",
+            "bytes": 1100,
+            "gzipBytes": 440
+          },
+          {
+            "file": ".output/server/index.mjs",
+            "bytes": 11004,
+            "gzipBytes": 3672
+          }
+        ]
+      },
+      "client": {
+        "bytes": 319787,
+        "gzipBytes": 102349,
+        "files": [
+          {
+            "file": ".output/public/assets/index-CBPDSzRe.js",
+            "bytes": 309297,
+            "gzipBytes": 98161
+          },
+          {
+            "file": ".output/public/assets/items._id-DxD_tA1l.js",
+            "bytes": 362,
+            "gzipBytes": 250
+          },
+          {
+            "file": ".output/public/assets/items.index-BKQ5K1pk.js",
+            "bytes": 170,
+            "gzipBytes": 159
+          },
+          {
+            "file": ".output/public/assets/routes-sBQoldGr.js",
+            "bytes": 68,
+            "gzipBytes": 83
+          },
+          {
+            "file": ".output/public/assets/ui-DTQGj5ID.js",
+            "bytes": 9890,
+            "gzipBytes": 3696
+          }
+        ]
+      }
+    },
+    "gzipLevel": 9,
+    "method": "Playwright request interception; fresh contexts; cache and service workers disabled; JS responses plus inline executable scripts; recompressed separately"
+  },
+  "interactive": {
+    "runs": 2,
+    "networkProfile": {
+      "latencyMs": 150,
+      "downloadBytesPerSecond": 200000,
+      "uploadBytesPerSecond": 93750,
+      "cpuSlowdown": 1
+    },
+    "probeIntervalMs": 25,
+    "counter": {
+      "route": "/",
+      "medianMs": 1977.8500000238419,
+      "samples": [
+        {
+          "ms": 1977.7000000476837,
+          "clickAttempts": 54
+        },
+        {
+          "ms": 1978,
+          "clickAttempts": 55
+        }
+      ]
+    },
+    "deferred": {
+      "route": "/items/1",
+      "medianMs": 820.7000000476837,
+      "samples": [
+        {
+          "ms": 820.9000000953674
+        },
+        {
+          "ms": 820.5
+        }
+      ]
+    }
+  },
+  "browserParity": {
+    "status": "passed",
+    "routes": {
+      "/": "Home Items SSR benchmark A small React application with server-rendered data. Count: 0",
+      "/items": "Home Items Items 50 items, loaded on the server. Item 01 Item 02 Item 03 Item 04 Item 05 Item 06 Item 07 Item 08 Item 09 Item 10 Item 11 Item 12 Item 13 Item 14 Item 15 Item 16 Item 17 Item 18 Item 19 Item 20 Item 21 Item 22 Item 23 Item 24 Item 25 Item 26 Item 27 Item 28 Item 29 Item 30 Item 31 Item 32 Item 33 Item 34 Item 35 Item 36 Item 37 Item 38 Item 39 Item 40 Item 41 Item 42 Item 43 Item 44 Item 45 Item 46 Item 47 Item 48 Item 49 Item 50",
+      "/items/1": "Home Items Item 01 Available immediately. Details for item 01."
+    }
+  },
+  "coldStart": {
+    "medianMs": 233.90245849999337,
+    "samplesMs": [
+      232.7170419999893,
+      235.08787499999744
+    ],
+    "runs": 2,
+    "pollIntervalMs": 25,
+    "method": "npm start spawn to first complete HTTP 200 on /; new process, warm filesystem; includes npm launcher and RSS hook"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "boost",
+  "label": "vite-ssr-boost",
+  "packages": ["@lomray/vite-ssr-boost", "react-router", "vite"],
+  "routes": ["/", "/items", "/items/1"],
+  "routePatterns": ["/", "/items", "/items/:id"],
+  "clientEntryPattern": "/assets/index-[^/]+\\.js$",
+  "outputDirs": ["build"],
+  "clientOutputDirs": ["build/client"],
+  "excludeDirs": ["cache"],
+  "streaming": true,
+  "notes": "React Router Data mode, lazy route objects; default footer hydration."
+}

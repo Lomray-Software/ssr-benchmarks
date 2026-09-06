@@ -1,0 +1,13 @@
+{
+  "name": "tanstack-start",
+  "label": "TanStack Start",
+  "packages": ["@tanstack/react-start", "@tanstack/react-router", "nitro", "vite"],
+  "routes": ["/", "/items", "/items/1"],
+  "routePatterns": ["/", "/items", "/items/:id"],
+  "clientEntryPattern": "/assets/index-[^/]+\\.js$",
+  "outputDirs": [".output"],
+  "clientOutputDirs": [".output/public"],
+  "excludeDirs": ["cache"],
+  "streaming": true,
+  "notes": "File routes and server functions; documented Nitro Node adapter."
+}

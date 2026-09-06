@@ -1,0 +1,36 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #202530;
+  background: #fafafa;
+}
+body {
+  margin: 0;
+}
+#benchmark-app {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+a {
+  color: #2054a3;
+}
+h1 {
+  font-size: 2rem;
+}
+p,
+li {
+  line-height: 1.5;
+}
+ul {
+  padding-left: 1.5rem;
+}
+button {
+  font: inherit;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}

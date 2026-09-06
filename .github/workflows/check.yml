@@ -1,0 +1,37 @@
+name: Check benchmark suite
+on:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+      - run: npm run verify:parity
+      - run: npm run smoke -- --seconds 10
+      - name: Smoke orchestrator and README renderer
+        run: |
+          npm run bench -- --quick --skip-build --output .bench/check-results
+          node bench/render-readme.mjs --results .bench/check-results/latest.json --output .bench/check-results/README.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-results
+          path: .bench/
+          include-hidden-files: true
+          if-no-files-found: warn

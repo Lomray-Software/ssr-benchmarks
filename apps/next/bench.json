@@ -1,0 +1,13 @@
+{
+  "name": "next",
+  "label": "Next.js",
+  "packages": ["next"],
+  "routes": ["/", "/items", "/items/1"],
+  "routePatterns": ["/", "/items", "/items/:id"],
+  "clientEntryPattern": "/_next/static/chunks/[^/]+\\.js$",
+  "outputDirs": [".next"],
+  "clientOutputDirs": [".next/static"],
+  "excludeDirs": ["cache"],
+  "streaming": true,
+  "notes": "App Router; connection() opts into request-time SSR; native server/client component boundaries."
+}

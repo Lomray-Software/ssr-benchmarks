@@ -1,0 +1,13 @@
+{
+  "name": "react-router-framework",
+  "label": "React Router Framework",
+  "packages": ["react-router", "@react-router/dev", "@react-router/serve", "vite"],
+  "routes": ["/", "/items", "/items/1"],
+  "routePatterns": ["/", "/items", "/items/:id"],
+  "clientEntryPattern": "/assets/entry\\.client-[^/]+\\.js$",
+  "outputDirs": ["build"],
+  "clientOutputDirs": ["build/client"],
+  "excludeDirs": ["cache"],
+  "streaming": true,
+  "notes": "Framework route modules; default server entry and Express adapter."
+}

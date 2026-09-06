@@ -1,0 +1,45 @@
+{
+  "name": "ssr-benchmarks",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.23.2 <23"
+  },
+  "packageManager": "npm@10.9.8",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "bench": "node bench/run.mjs",
+    "verify:parity": "node bench/verify-parity.mjs",
+    "smoke": "node bench/smoke.mjs",
+    "test": "node --test bench/*.test.mjs",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "readme": "node bench/render-readme.mjs"
+  },
+  "devDependencies": {
+    "@lomray/eslint-config": "7.0.0",
+    "@lomray/eslint-config-react": "7.0.0",
+    "@lomray/prettier-config": "3.0.0",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "eslint": "10.10.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.69.0",
+    "globals": "17.12.0",
+    "playwright": "1.63.0",
+    "parse5": "8.0.1"
+  },
+  "prettier": "@lomray/prettier-config",
+  "overrides": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  }
+}

@@ -1,0 +1,15 @@
+package-lock.json
+results/
+README.md
+PR_DESCRIPTION.md
+node_modules/
+**/build/
+**/dist/
+**/.next/
+**/.output/
+**/.nitro/
+**/.react-router/
+**/.tanstack/
+**/routeTree.gen.ts
+**/next-env.d.ts
+.bench/

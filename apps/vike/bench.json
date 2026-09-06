@@ -1,0 +1,13 @@
+{
+  "name": "vike",
+  "label": "Vike",
+  "packages": ["vike", "vike-react", "react-streaming", "vite"],
+  "routes": ["/", "/items", "/items/1"],
+  "routePatterns": ["/", "/items", "/items/:id"],
+  "clientEntryPattern": "/assets/entries/[^/]+\\.js$",
+  "outputDirs": ["dist"],
+  "clientOutputDirs": ["dist/client"],
+  "excludeDirs": ["cache"],
+  "streaming": true,
+  "notes": "vike-react with react-streaming useAsync; detail route enables stream: true."
+}

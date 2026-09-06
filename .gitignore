@@ -1,0 +1,15 @@
+node_modules/
+**/build/
+**/dist/
+**/.next/
+**/.output/
+**/.nitro/
+**/.react-router/
+**/.tanstack/
+**/routeTree.gen.ts
+**/next-env.d.ts
+*.tsbuildinfo
+.bench/
+playwright-report/
+test-results/
+.DS_Store
