@@ -54,4 +54,8 @@ export default [
   { ...tseslint.configs.disableTypeChecked, files: ['**/*.{js,mjs,cjs}'] },
   // Node --require preloads are CommonJS, without a transpilation step.
   { files: ['**/*.cjs'], rules: { '@typescript-eslint/no-var-requires': 'off' } },
+  {
+    files: ['runtimes/*-bun/*.mjs', 'runtimes/bun-serve/*.mjs'],
+    languageOptions: { globals: { Bun: 'readonly' } },
+  },
 ];

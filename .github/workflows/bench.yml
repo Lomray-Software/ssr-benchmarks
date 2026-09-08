@@ -11,7 +11,7 @@ concurrency:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,6 +20,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run bench
@@ -32,7 +35,7 @@ jobs:
       - name: Commit generated results
         run: |
           test "$(git branch --show-current)" = prod
-          node --input-type=module -e "import fs from 'node:fs'; const r = JSON.parse(fs.readFileSync('results/latest.json')); if (r.status !== 'complete' || r.mode !== 'full') process.exit(1);"
+          node --input-type=module -e "import fs from 'node:fs'; for (const file of ['results/latest.json', 'results/latest-runtimes.json']) { const r = JSON.parse(fs.readFileSync(file)); if (r.status !== 'complete' || r.mode !== 'full') process.exit(1); }"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- results/ README.md

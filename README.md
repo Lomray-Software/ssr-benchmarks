@@ -4,7 +4,7 @@
 
 A reproducible comparison of one small React application implemented with [vite-ssr-boost](https://lomray-software.github.io/vite-ssr-boost/), React Router Framework mode, Vike, TanStack Start, and Next.js. Maintained by Lomray Software, which also maintains vite-ssr-boost. The application contract is in [SPEC.md](SPEC.md); results describe this workload, not a general ranking of frameworks.
 
-## Results
+## Frameworks
 
 <!-- BENCHMARK_RESULTS_START -->
 
@@ -41,9 +41,34 @@ Compare within this run; shared CI hardware varies between runs.
 
 Each data cell links to its complete raw result, including samples, byte counts, settings, and environment metadata. Milliseconds and bytes are lower-is-less measurements, not scores. `not measured` means no observation was available. An **incomplete** result is not a successful benchmark. Quick runs check the tooling and must not be used to draw performance conclusions.
 
+## Runtimes
+
+<!-- RUNTIME_RESULTS_START -->
+
+Run `npm run bench` to generate results.
+
+<!-- RUNTIME_RESULTS_END -->
+
+All seven variants serve **one production build of `apps/boost`**. Express reuses the managed `ssr-boost start`; the other launchers import the built `App` and routes and use `core/handler`, `loadHtmlShell`, and `createRouteAssetPreparer({ buildDir })`. The shared static-file handler streams built client files with Express's default `Cache-Control: public, max-age=0`. It excludes the private HTML shell and dotfiles. Runtime parity compares complete HTML bytes on all three routes, decoded gzip against identity, all public static-file hashes, cache headers and validators, HEAD/304 responses, and 200/404 statuses. Identity detail responses must deliver the shell at least 600 ms before the deferred field. Browser parity additionally exercises hydration, counter clicks, links, and deferred visibility on every variant.
+
+Each variant runs in **two fresh server processes**, identity then gzip. Each route has 100 completed warmups and 2,000 measured requests at 10 connections, followed by RSS sampling and exactly **10,000 additional `/` requests at 10 connections** for the second RSS sample. Higher-load runs use 50 and 100 connections, each with a fresh 100-request warmup and 2,000 measured requests per route. HTTP/1.1 keep-alive, no pipelining, the same client and User-Agent, absolute 10-second request timeouts, and nearest-rank percentiles apply throughout. Throughput is completed requests divided by measured batch wall time; its p99 is full-response latency. All latency samples, wire body sizes, and actual response encodings are retained. Warmups are excluded. Quick runs use 5 warmups and 30 requests at 10 connections, then 100 warmups and 200 requests at 50/100 connections; they retain the full 10,000-request memory probe and five cold starts. Cold start is a median of five fresh `npm start` processes with identity readiness requests. RSS growth is a point-in-time leak indicator, not a leak diagnosis; GC and allocator retention can increase or decrease it.
+
+CPU is sampled **inside the listening server** on a signal immediately before and after each measured batch, after warmup. `process.cpuUsage()` deltas divided by completed requests report process CPU µs/request, including background threads such as compression workers. `process.threadCpuUsage()` separately reports main-thread CPU where supported; unavailable counters are reported as `not measured`. The resource table weights the three 10-connection routes by completed requests. Loader timer waits are elapsed time, not CPU work. Snapshot serialization, signal delivery, and their small boundary overhead remain in the measurement window; npm, Chromium, and the separate load client are excluded. No per-request instrumentation, forced GC, sampler, or HTTP control endpoint is installed. Node and Bun versions, serving runtime identity, framework and adapter versions, lockfile hash, and source hash are recorded in every runtime result. Bun's Node compatibility version is recorded separately from the Node benchmark-client version.
+
+Compression stays enabled on the server; the client explicitly requests identity or gzip. **Express** uses managed `compression`; **node-http** uses the Boost Node adapter's incremental zlib gzip; **Fastify** uses its Fetch-response send path and `@fastify/compress` with `Z_SYNC_FLUSH` (Boost's Fastify adapter hijacks replies and would bypass that plugin); **Hono on Node and Bun** uses `compress()` and the runtime's `CompressionStream`; **Elysia and Bun.serve** use the same small zlib gzip wrapper with `Z_SYNC_FLUSH`. HTML must actually carry `Content-Encoding: gzip` in gzip runs. Express, Fastify, and Hono retain their default 1 KiB threshold for known-length static assets; the Node adapter and the Elysia/Bun.serve wrapper also compress smaller assets. Hono's native compression buffers decoded HTML until completion on the pinned Node and Bun versions: the raw parity result records decoded shell and deferred timing for gzip separately, and headers-received TTFB must not be mistaken for decoded HTML arrival. Compression bytes can differ while the decoded HTML remains identical.
+
+This is a local, single-process server comparison. **workerd** needs a Worker bundle, bindings and a different asset/CPU accounting environment; **Deno** needs its own launcher and instrumentation. Neither is represented by a Node/Bun proxy or an estimated result. They are outside this matrix. Synthetic loader delays and a closed-loop local client do not establish production capacity.
+
 ## Reproduce
 
-Use Node **22.23.2**, npm, and Linux or macOS. Close unrelated CPU-intensive work and use an otherwise idle machine. No globally installed JavaScript tools are needed.
+Use Node **22.23.2**, Bun **1.4.2**, npm, and Linux or macOS. Close unrelated CPU-intensive work and use an otherwise idle machine. Install Bun 1.4.2 with the [official installer](https://bun.com/docs/installation). An optional workspace installation keeps it in the ignored `.bench/` directory:
+
+```sh
+curl -fsSL https://bun.sh/install | BUN_INSTALL="$PWD/.bench/bun" bash -s "bun-v1.4.2"
+export PATH="$PWD/.bench/bun/bin:$PATH"
+```
+
+The runner discovers `.bench/bun/bin/bun`, `BUN_BIN`, or Bun on PATH. Direct `npm start` commands in Bun variant directories require Bun on PATH. All other tools are workspace dependencies.
 
 ```sh
 npm ci && npm run bench
@@ -54,19 +79,26 @@ The runner installs the lockfile's Chromium build using local Playwright if it i
 The runner processes one application at a time: production build → start → HTTP load → RSS → correctness checks and browser measurements → stop → five fresh process starts. No app servers run concurrently. Chromium runs only after the HTTP and RSS measurements and is closed before cold-start measurement. Applications run with `NODE_ENV=production`. Build time is not a reported metric.
 
 ```sh
-npm run bench -- --quick        # 5 warmups, 30 requests/route, 2 browser/cold-start runs
-npm run build                  # all five production builds
+npm run bench -- --quick        # both sections; reduced samples, see runtime methodology
+npm run bench -- --frameworks-only
+npm run bench -- --runtimes-only
+npm run build                  # five app builds, then runtime launcher syntax checks
 npm run verify:parity          # browser text, clicks, links, and streaming correctness
-npm run verify:parity -- --http # narrower server-only parity check
+npm run verify:parity -- --http # framework server-only parity check
+npm run verify:parity -- --runtimes # exact runtime HTTP parity
+npm run verify:parity -- --runtimes --browser # runtime browser checks too
 npm run test                   # harness correctness tests
 npm run lint
 npm run format:check
-npm run smoke -- --seconds 10  # at least 10 seconds per metric per app
+npm run smoke -- --seconds 10  # both sections, at least 10 seconds per metric
+npm run smoke -- --runtimes --seconds 10 # runtime metrics only
 ```
 
-All scripts can also be invoked directly, for example `node bench/ttfb.mjs --framework vike --quick` or `node bench/sizes.mjs --framework next`. Each measurement script starts and stops its own already-built app and can save JSON with `--output /tmp/measurement.json`. `memory.mjs` performs its own TTFB run before reading RSS. `cold-start.mjs` starts fresh processes itself. Each app exposes `npm run build` and `PORT=3000 npm run start` from its directory.
+Framework quick runs use 5 warmups, 30 requests per route, and two browser/cold-start runs. Runtime quick counts are described above.
 
-The orchestrator writes `results/<UTC-date>/<framework>.json`, `results/latest.json`, and the README. A later run on the same date replaces that date's files; Git history and CI artifacts retain earlier committed runs. To keep an independent local run, use `npm run bench -- --output /tmp/my-ssr-results`; its README is written alongside those results. `--skip-build` is for checking existing artifacts and must not be used after editing an app. The CI smoke uses a separate output directory and never publishes its numbers.
+All scripts can also be invoked directly, for example `node bench/ttfb.mjs --framework vike --quick` or `node bench/sizes.mjs --framework next`. Runtime HTTP, memory, and cold-start scripts accept `--runtimes` for the complete matrix or `--runtime hono-bun` for one variant. For example, `node bench/ttfb.mjs --runtimes --quick` measures both encodings and all three connection counts. Each measurement script starts and stops its own already-built app and can save JSON with `--output /tmp/measurement.json`. `memory.mjs` performs its own TTFB run before reading RSS. `cold-start.mjs` starts fresh processes itself. Each app exposes `npm run build` and `PORT=3000 npm run start` from its directory.
+
+The orchestrator writes `results/<UTC-date>/<framework>.json`, `results/latest.json`, `results/<UTC-date>/runtimes/<name>.json`, `results/latest-runtimes.json`, and the README. With both sections selected, the Boost application is built once and its output is reused by every runtime. A later run on the same date replaces that date's files; Git history and CI artifacts retain earlier committed runs. To keep an independent local run, use `npm run bench -- --output /tmp/my-ssr-results`; its README is written alongside those results. `--skip-build` is for checking existing artifacts and must not be used after editing an app. The CI smoke uses a separate output directory and never publishes its numbers.
 
 ## Methodology
 
@@ -80,26 +112,29 @@ The orchestrator writes `results/<UTC-date>/<framework>.json`, `results/latest.j
 
 **Cold start (`bench/cold-start.mjs`).** Median of five fresh production processes from spawning `npm run start` until the first complete HTTP 200 on `/`. Readiness is polled every 25 ms. This includes npm launcher, module loading, framework startup, and first request work. OS filesystem caches stay warm; it is not serverless provisioning, a cold disk, a container pull, or a fresh VM. An unused port and a unique PID record prevent an unrelated server from satisfying readiness.
 
-**Memory (`bench/memory.mjs`).** RSS in bytes from `process.memoryUsage.rss()` in the actual Node process listening on the app port, immediately after the last route's TTFB load and before browser work. A common startup-only preload identifies that PID and adds a signal handler to take the one sample. It adds no HTTP endpoint or per-request instrumentation. No forced GC, heap limit, or ongoing sampler is used. npm's launcher, the benchmark client, Chromium, and build workers are excluded. These Node adapters each run a single serving process. RSS is a point-in-time measurement, not peak memory or heap size. The same small preload is included in cold-start timing for every app. Server processes are tracked and stopped as owned process groups.
+**Framework memory (`bench/memory.mjs`).** RSS in bytes from `process.memoryUsage.rss()` in the actual Node process listening on the app port, immediately after the last route's TTFB load and before browser work. A common startup-only preload identifies that PID and adds a signal handler to take the one sample. It adds no HTTP endpoint or per-request instrumentation. No forced GC, heap limit, or ongoing sampler is used. npm's launcher, the benchmark client, Chromium, and build workers are excluded. These Node adapters each run a single serving process. RSS is a point-in-time measurement, not peak memory or heap size. The same small preload is included in cold-start timing for every app. Server processes are tracked and stopped as owned process groups.
 
 **Environment and variation.** Every framework result includes Node, npm when invoked through npm, CPU model/core count, OS/architecture, system memory, installed framework/React/Playwright versions, Chromium version when available, lockfile and source hashes, and CI commit/run identifiers when present. Apps run in the declared order in raw JSON. The order is fixed and disclosed; thermal drift and shared-host noise remain possible. Repeat complete runs and compare the raw distributions rather than treating tiny differences or weekly changes as causal. Full and quick results are explicitly distinguished.
 
 ## Scope and fairness
 
-Production compilers, minification, code splitting, compression, and adapter settings use their defaults. The app contract requires only two rendering opt-ins: Vike streaming for the detail route, and Next `connection()` for request-time rendering instead of prerendered/cached pages. Ordinary anchors prevent prefetching and client-navigation caches from changing a fresh page-load workload. No application response/data cache, CDN, remote API, or optional performance tuning is added. Dataset JSON is loaded as a server module in every app; the simulated timers run again on every request. Browser cache is disabled regardless of default static-asset cache headers.
+The Frameworks section uses production compiler, minification, code splitting, compression, and adapter defaults. Runtime transport and compression choices are disclosed above. The app contract requires only two rendering opt-ins: Vike streaming for the detail route, and Next `connection()` for request-time rendering instead of prerendered/cached pages. Ordinary anchors prevent prefetching and client-navigation caches from changing a fresh page-load workload. No application response/data cache, CDN, remote API, or optional performance tuning is added. Dataset JSON is loaded as a server module in every app; the simulated timers run again on every request. Browser cache is disabled regardless of default static-asset cache headers.
 
 This does not compare CDN delivery, caching strategies, ISR, RSC-only features, Server Actions, client route transitions, database access, production traffic capacity, build speed, image/font optimization, or deployment platforms. Next uses native server/client boundaries and its normal RSC transport because App Router requires them; that transport contributes to the measured payload and is not removed. Different routers and runtime adapters remain part of their respective frameworks. Synthetic delays and this small UI cannot represent every application's workload.
 
 ## Automation and challenges
 
-[Weekly CI](.github/workflows/bench.yml) runs Monday at 05:00 UTC and on manual dispatch, on `ubuntu-latest` with the pinned Node version. It uploads `results/` and commits successful full results and the generated README to `prod` using the default token. Set `prod` as the default branch for scheduled triggers and allow the default token to write contents; branch protection must permit the bot's result commit. A failed or incomplete run uploads available results but does not commit them. [PR checks](.github/workflows/check.yml) build all apps, run harness tests and parity, and smoke every metric for at least 10 seconds per app (an in-flight iteration is allowed to finish). They also run the quick orchestrator and README renderer with separate output.
+[Weekly CI](.github/workflows/bench.yml) runs Monday at 05:00 UTC and on manual dispatch, on `ubuntu-latest` with the pinned Node and Bun versions. It uploads `results/` and commits successful full results and the generated README to `prod` using the default token. Set `prod` as the default branch for scheduled triggers and allow the default token to write contents; branch protection must permit the bot's result commit. A failed or incomplete run uploads available results but does not commit them. [PR checks](.github/workflows/check.yml) build all apps, run harness tests and parity, and smoke every metric for at least 10 seconds per app (an in-flight iteration is allowed to finish). They also run the quick orchestrator and README renderer with separate output.
 
 To challenge a number, [open an issue](https://github.com/Lomray-Software/ssr-benchmarks/issues/new) with the raw JSON, environment, command, and **app diff** that reproduces the concern. Changes that make an implementation more idiomatic while preserving [SPEC.md](SPEC.md) are welcome from any framework's maintainers. Include before/after results on the same machine and disclose changed defaults. Do not compare values from different quick/full modes or hardware as if they were one experiment.
 
-The README is generated from [bench/README.template.md](bench/README.template.md); `bench/render-readme.mjs` replaces the marker-delimited results section using `results/latest.json`. Edit methodology in the template and run `npm run readme`.
+The README is generated from [bench/README.template.md](bench/README.template.md); `bench/render-readme.mjs` replaces both marker-delimited sections using `results/latest.json` and `results/latest-runtimes.json`. Edit methodology in the template and run `npm run readme`.
 
 ## Official setup references
 
+- [Boost Fetch core and runtime adapters](https://lomray-software.github.io/vite-ssr-boost/guide/runtime-adapters), [production helpers](https://lomray-software.github.io/vite-ssr-boost/api/node-production), and [deployment/compression](https://lomray-software.github.io/vite-ssr-boost/guide/deployment).
+- [Fastify Fetch replies](https://fastify.dev/docs/latest/Reference/Reply/#response), [Fastify compression](https://github.com/fastify/fastify-compress), [Hono compression](https://hono.dev/docs/middleware/builtin/compress), [Hono Node server](https://github.com/honojs/node-server), [Elysia mount](https://elysiajs.com/patterns/mount), and [Bun HTTP server](https://bun.com/docs/runtime/http/server).
+- [Node CPU counters](https://nodejs.org/docs/latest-v22.x/api/process.html#processcpuusagepreviousvalue) and [main-thread CPU counters](https://nodejs.org/docs/latest-v22.x/api/process.html#processthreadcpuusagepreviousvalue).
 - [Boost getting started](https://lomray-software.github.io/vite-ssr-boost/guide/getting-started), [loader streaming](https://lomray-software.github.io/vite-ssr-boost/guide/data-streaming), and the [`example/minimal` template](https://github.com/Lomray-Software/vite-template/tree/example/minimal). Package README: `npm view @lomray/vite-ssr-boost readme`.
 - [React Router Framework installation](https://reactrouter.com/start/framework/installation) and [streaming with Suspense](https://reactrouter.com/how-to/suspense).
 - [Vike getting started](https://vike.dev/new), [manual integration](https://vike.dev/add), [stream](https://vike.dev/stream), and [`react-streaming` useAsync](https://github.com/brillout/react-streaming#useasync).

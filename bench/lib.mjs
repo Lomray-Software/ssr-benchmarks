@@ -1,6 +1,6 @@
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFile, writeFile, mkdir, rename, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rename, readdir, access } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:net';
 import { cpus, platform, release, arch, totalmem } from 'node:os';
@@ -11,6 +11,16 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 export const frameworks = ['boost', 'react-router-framework', 'vike', 'tanstack-start', 'next'];
+
+export const runtimes = [
+  'express',
+  'node-http',
+  'fastify',
+  'hono-node',
+  'hono-bun',
+  'elysia-bun',
+  'bun-serve',
+];
 
 export const userAgent =
   'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36';
@@ -24,11 +34,14 @@ export const networkProfile = {
 
 export const sleep = delay;
 
+/** Distinguish direct script execution from harness imports. */
 export const isMain = (url) =>
   process.argv[1] && url === pathToFileURL(resolve(process.argv[1])).href;
 
+/** Read a UTF-8 JSON artifact. */
 export const readJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
 
+/** Publish JSON atomically so readers never observe a partial result. */
 export async function writeJson(file, value) {
   await mkdir(dirname(file), { recursive: true });
   const temporary = `${file}.${process.pid}.tmp`;
@@ -37,6 +50,7 @@ export async function writeJson(file, value) {
   await rename(temporary, file);
 }
 
+/** Parse the existing long-option CLI convention. */
 export function options(argv = process.argv.slice(2)) {
   const result = {};
   for (let i = 0; i < argv.length; i++) {
@@ -50,6 +64,7 @@ export function options(argv = process.argv.slice(2)) {
   return result;
 }
 
+/** Reject invalid sample counts before starting a measurement. */
 export function numberOption(value, fallback, name) {
   const number = value === undefined ? fallback : Number(value);
 
@@ -58,15 +73,74 @@ export function numberOption(value, fallback, name) {
   return number;
 }
 
+/** Resolve a benchmark target while retaining the framework configuration contract. */
 export async function appConfig(name) {
-  if (!frameworks.includes(name)) throw new Error(`Unknown framework: ${name}`);
+  const runtime = runtimes.includes(name);
+
+  if (!runtime && !frameworks.includes(name)) throw new Error(`Unknown benchmark: ${name}`);
+
+  const dir = resolve(root, runtime ? 'runtimes' : 'apps', name);
 
   return {
-    ...(await readJson(resolve(root, 'apps', name, 'bench.json'))),
-    dir: resolve(root, 'apps', name),
+    ...(await readJson(resolve(dir, 'bench.json'))),
+    dir,
+    section: runtime ? 'runtimes' : 'frameworks',
   };
 }
 
+/** Select either matrix, rejecting contradictory section flags. */
+export function selectedNames(opts = {}) {
+  const {
+    runtimes: runtimeMode,
+    'runtimes-only': runtimesOnly,
+    'frameworks-only': frameworksOnly,
+    framework,
+    runtime,
+  } = opts;
+
+  if (frameworksOnly && (runtimeMode || runtimesOnly || runtime))
+    throw new Error('Choose either --frameworks-only or --runtimes-only');
+
+  if (framework && (runtimeMode || runtimesOnly || runtime))
+    throw new Error('Use --runtime to select a runtime variant');
+
+  if (runtime) {
+    if (!runtimes.includes(String(runtime))) throw new Error(`Unknown runtime: ${runtime}`);
+
+    return [String(runtime)];
+  }
+
+  if (framework) {
+    if (!frameworks.includes(String(framework))) throw new Error(`Unknown framework: ${framework}`);
+
+    return [String(framework)];
+  }
+
+  return runtimeMode || runtimesOnly
+    ? runtimes
+    : frameworksOnly
+      ? frameworks
+      : [...frameworks, ...runtimes];
+}
+
+/** Prefer an explicitly selected Bun binary or the pinned workspace installation. */
+export async function bunExecutable() {
+  if (process.env.BUN_BIN) return process.env.BUN_BIN;
+
+  const local = resolve(root, '.bench/bun/bin/bun');
+
+  try {
+    await access(local);
+
+    return local;
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+
+    return 'bun';
+  }
+}
+
+/** Keep all samples and select the nearest-rank percentile. */
 export function percentile(values, p) {
   if (!values.length) throw new Error('No samples');
 
@@ -75,6 +149,7 @@ export function percentile(values, p) {
   return ordered[Math.max(0, Math.ceil(p * ordered.length) - 1)];
 }
 
+/** Average the middle pair when a sample count is even. */
 export function median(values) {
   if (!values.length) throw new Error('No samples');
 
@@ -84,12 +159,14 @@ export function median(values) {
   return ordered.length % 2 ? ordered[middle] : (ordered[middle - 1] + ordered[middle]) / 2;
 }
 
+/** Report the same three latency quantiles throughout both matrices. */
 export const summary = (values) => ({
   p50: percentile(values, 0.5),
   p95: percentile(values, 0.95),
   p99: percentile(values, 0.99),
 });
 
+/** Enumerate files deterministically while excluding generated directories. */
 export async function filesIn(directory, excluded = []) {
   const output = [];
   for (const item of await readdir(directory, { withFileTypes: true })) {
@@ -104,10 +181,11 @@ export async function filesIn(directory, excluded = []) {
   return output.sort();
 }
 
-export async function environment(app) {
-  const require = createRequire(resolve(app.dir, 'package.json'));
+/** Record installed versions and source identity for the selected benchmark target. */
+export async function environment({ dir, packages, name: appName, section }) {
+  const require = createRequire(resolve(dir, 'package.json'));
   const versions = {};
-  for (const name of [...app.packages, 'react', 'react-dom', 'playwright']) {
+  for (const name of [...packages, 'react', 'react-dom', 'playwright']) {
     // Read the nearest installed package, including packages without a root export.
     for (const directory of require.resolve.paths(name)) {
       try {
@@ -125,7 +203,7 @@ export async function environment(app) {
     if (!versions[name]) throw new Error(`Cannot find version: ${name}`);
   }
   const hash = createHash('sha256');
-  for (const directory of ['apps', 'shared', 'data', 'bench']) {
+  for (const directory of ['apps', 'runtimes', 'shared', 'data', 'bench']) {
     for (const file of await filesIn(resolve(root, directory), [
       'node_modules',
       'build',
@@ -156,12 +234,19 @@ export async function environment(app) {
 
   return {
     node: process.version,
+    bun:
+      section === 'runtimes'
+        ? execFileSync(await bunExecutable(), ['--version'], {
+            env: cleanEnv(),
+            encoding: 'utf8',
+          }).trim()
+        : null,
     npm: process.env.npm_config_user_agent ?? null,
     cpu: { model: cpus()[0]?.model ?? 'unknown', logicalCores: cpus().length },
     os: { platform: platform(), release: release(), arch: arch() },
     totalMemoryBytes: totalmem(),
     versions,
-    nextBundledReact: app.name === 'next' ? require('next/dist/compiled/react').version : null,
+    nextBundledReact: appName === 'next' ? require('next/dist/compiled/react').version : null,
     lockfileSha256: createHash('sha256')
       .update(await readFile(resolve(root, 'package-lock.json')))
       .digest('hex'),
@@ -175,6 +260,7 @@ export async function environment(app) {
   };
 }
 
+/** Keep launcher environment overrides consistent across CLI tools. */
 export function cleanEnv(extra = {}) {
   const env = { ...process.env, ...extra };
 
@@ -183,6 +269,7 @@ export function cleanEnv(extra = {}) {
   return env;
 }
 
+/** Run a checked command with inherited output. */
 export async function command(bin, args, config = {}) {
   const child = spawn(bin, args, { cwd: root, env: cleanEnv(), stdio: 'inherit', ...config });
 
@@ -196,9 +283,12 @@ export async function command(bin, args, config = {}) {
   });
 }
 
-export async function build(app) {
-  console.log(`BUILD ${app.name}`);
-  await command('npm', ['run', 'build'], { cwd: app.dir });
+/** Build a runtime's shared Boost application using its existing production build. */
+export async function build({ name, dir, section }) {
+  console.log(`BUILD ${section === 'runtimes' ? 'boost (shared runtime build)' : name}`);
+  await command('npm', ['run', 'build'], {
+    cwd: section === 'runtimes' ? resolve(root, 'apps/boost') : dir,
+  });
 }
 const servers = new Set();
 let stopping = false;
@@ -212,6 +302,7 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
   });
 }
 
+/** Reserve an unused local port before spawning a server. */
 async function availablePort(port) {
   const probe = createServer();
 
@@ -228,12 +319,13 @@ async function availablePort(port) {
   return chosen;
 }
 
-export async function start(app, { port = 0, timeoutMs = 30000 } = {}) {
+/** Start and track only the owned process group, including native Bun servers. */
+export async function start({ name, dir, runtime }, { port = 0, timeoutMs = 30000 } = {}) {
   if (process.platform === 'win32')
     throw new Error('The process-group runner supports Linux and macOS.');
 
   port = await availablePort(port);
-  const token = `${app.name}-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const token = `${name}-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const runDirectory = resolve(root, '.bench', token);
 
   await mkdir(runDirectory, { recursive: true });
@@ -242,15 +334,17 @@ export async function start(app, { port = 0, timeoutMs = 30000 } = {}) {
   const logFile = resolve(runDirectory, 'server.log');
   const baseUrl = `http://127.0.0.1:${port}`;
   const hook = resolve(root, 'bench/rss-hook.cjs');
+  const bun = runtime === 'bun' ? await bunExecutable() : null;
   const started = performance.now();
   const child = spawn('npm', ['run', 'start'], {
-    cwd: app.dir,
+    cwd: dir,
     detached: true,
     stdio: ['ignore', 'pipe', 'pipe'],
     env: cleanEnv({
       NODE_ENV: 'production',
       PORT: String(port),
       HOST: '127.0.0.1',
+      PATH: bun && bun !== 'bun' ? `${dirname(bun)}:${process.env.PATH}` : process.env.PATH,
       BENCH_PORT: String(port),
       BENCH_PID_FILE: pidFile,
       BENCH_RSS_FILE: rssFile,
@@ -278,6 +372,8 @@ export async function start(app, { port = 0, timeoutMs = 30000 } = {}) {
     rssFile,
     logFile,
     runDirectory,
+
+    /** Stop the owned process group and retain its diagnostic log. */
     stop() {
       stopPromise ??= (async () => {
         try {
@@ -311,7 +407,7 @@ export async function start(app, { port = 0, timeoutMs = 30000 } = {}) {
 
       try {
         const response = await fetch(baseUrl, {
-          headers: { 'user-agent': userAgent },
+          headers: { 'user-agent': userAgent, 'accept-encoding': 'identity' },
           signal: AbortSignal.timeout(500),
         });
 
@@ -322,6 +418,7 @@ export async function start(app, { port = 0, timeoutMs = 30000 } = {}) {
           const pid = await readJson(pidFile);
 
           server.pid = pid.pid;
+          server.runtime = pid;
 
           return server;
         }
@@ -343,24 +440,44 @@ export async function start(app, { port = 0, timeoutMs = 30000 } = {}) {
   }
 }
 
+/** Run the same metric CLI against one framework or every requested runtime. */
 export async function cliMeasure(measure, { needsServer = true, needsBuild = false } = {}) {
   const opts = options();
-  const app = await appConfig(opts.framework ?? 'boost');
+  const names =
+    opts.runtimes || opts.runtime || opts['runtimes-only']
+      ? selectedNames(opts)
+      : [opts.framework ?? 'boost'];
+  const results = {};
+  for (const name of names) {
+    const app = await appConfig(name);
+    const { section } = app;
 
-  if (needsBuild) await build(app);
+    if (needsBuild) await build(app);
 
-  const server = needsServer ? await start(app) : null;
-  try {
     const result = {
-      framework: app.name,
+      [section === 'runtimes' ? 'runtime' : 'framework']: name,
       environment: await environment(app),
-      ...(await measure(app, server, opts)),
     };
+    const encodings = section === 'runtimes' && needsServer ? ['identity', 'gzip'] : [null];
 
-    if (opts.output) await writeJson(resolve(String(opts.output)), result);
+    if (encodings[0]) result.encodings = {};
 
-    console.log(JSON.stringify(result, null, 2));
-  } finally {
-    await server?.stop();
+    for (const encoding of encodings) {
+      const server = needsServer ? await start(app) : null;
+      try {
+        const value = await measure(app, server, { ...opts, ...(encoding ? { encoding } : {}) });
+
+        if (encoding) result.encodings[encoding] = value;
+        else Object.assign(result, value);
+      } finally {
+        await server?.stop();
+      }
+    }
+    results[name] = result;
   }
+  const output = names.length === 1 ? results[names[0]] : results;
+
+  if (opts.output) await writeJson(resolve(String(opts.output)), output);
+
+  console.log(JSON.stringify(output, null, 2));
 }

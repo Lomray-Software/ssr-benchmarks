@@ -9,7 +9,8 @@
   },
   "packageManager": "npm@10.9.8",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "runtimes/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces",

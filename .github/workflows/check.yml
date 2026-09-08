@@ -9,13 +9,16 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       # The build generates files that lint and types resolve (TanStack's routeTree.gen.ts).
@@ -24,6 +27,8 @@ jobs:
       - run: npm run format:check
       - run: npm test
       - run: npm run verify:parity
+      - run: npm run verify:parity -- --runtimes
+      - run: npm run verify:parity -- --runtimes --browser
       - run: npm run smoke -- --seconds 10
       - name: Smoke orchestrator and README renderer
         run: |

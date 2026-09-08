@@ -1,33 +1,57 @@
-import { readFile, rm } from 'node:fs/promises';
-import { cliMeasure, isMain, sleep } from './lib.mjs';
-import { measureTtfb } from './ttfb.mjs';
+import http from 'node:http';
+import { cliMeasure, isMain } from './lib.mjs';
+import { sampleProcess } from './process-usage.mjs';
+import { batch, measureTtfb } from './ttfb.mjs';
 
+/** Read RSS from the actual listening process without forcing garbage collection. */
 export async function measureMemory(server) {
-  await rm(server.rssFile, { force: true });
-  process.kill(server.pid, 'SIGUSR2');
-  const deadline = performance.now() + 5000;
-  while (performance.now() < deadline) {
-    try {
-      const sample = JSON.parse(await readFile(server.rssFile, 'utf8'));
+  return {
+    ...(await sampleProcess(server)),
+    method:
+      'process.memoryUsage.rss() in the listening process, immediately after TTFB; no forced GC',
+  };
+}
 
-      if (sample.pid !== server.pid) throw new Error('RSS PID mismatch');
+/** Compare post-load RSS with the same process after exactly 10,000 additional home requests. */
+export async function measureLeak(server, { encoding = 'identity' } = {}) {
+  const before = await measureMemory(server);
+  const requests = 10000;
+  const concurrency = 10;
+  const agent = new http.Agent({ keepAlive: true, maxSockets: concurrency });
+  const started = performance.now();
 
-      return {
-        ...sample,
-        method:
-          'process.memoryUsage.rss() in the listening Node process, immediately after TTFB; no forced GC',
-      };
-    } catch (error) {
-      if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
-    }
-    await sleep(10);
+  try {
+    await batch(`${server.baseUrl}/`, requests, concurrency, agent, {
+      encoding,
+      expectedEncoding: encoding,
+    });
+  } finally {
+    agent.destroy();
   }
-  throw new Error('RSS sample timed out');
+  const elapsedMs = performance.now() - started;
+  const after = await measureMemory(server);
+
+  return {
+    before,
+    after,
+    deltaBytes: after.rssBytes - before.rssBytes,
+    requests,
+    concurrency,
+    route: '/',
+    encoding,
+    elapsedMs,
+    method:
+      'RSS immediately after the 10-connection run and after 10,000 additional / requests at 10 connections; no extra warmup or forced GC; growth is an indicator, not proof of a leak',
+  };
 }
 
 if (isMain(import.meta.url))
   await cliMeasure(async (app, server, opts) => {
     const ttfb = await measureTtfb(app, server, opts);
 
-    return { ttfb, memory: await measureMemory(server) };
+    return {
+      ttfb,
+      memory:
+        app.section === 'runtimes' ? await measureLeak(server, opts) : await measureMemory(server),
+    };
   });

@@ -1,0 +1,10 @@
+{
+  "name": "fastify",
+  "label": "Fastify / Node",
+  "runtime": "node",
+  "packages": ["@lomray/vite-ssr-boost", "react-router", "fastify", "@fastify/compress"],
+  "routes": ["/", "/items", "/items/1"],
+  "streaming": true,
+  "compression": "@fastify/compress (gzip, Z_SYNC_FLUSH)",
+  "notes": "Shared apps/boost build; no application source duplication."
+}
