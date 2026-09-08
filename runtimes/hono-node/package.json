@@ -7,7 +7,7 @@
     "build": "node --check server.mjs"
   },
   "dependencies": {
-    "@lomray/vite-ssr-boost": "8.4.1",
+    "@lomray/vite-ssr-boost": "8.4.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-router": "8.3.1",
