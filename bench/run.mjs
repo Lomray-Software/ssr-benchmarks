@@ -11,16 +11,28 @@ import {
   isMain,
   options,
   root,
+  runtimes,
+  selectedNames,
   start,
   writeJson,
 } from './lib.mjs';
-import { measureMemory } from './memory.mjs';
+import { measureLeak, measureMemory } from './memory.mjs';
 import { renderReadme } from './render-readme.mjs';
 import { emittedSizes, measureSizes } from './sizes.mjs';
-import { measureTtfb } from './ttfb.mjs';
-import { httpParity, browserParity, compareParity } from './verify-parity.mjs';
+import { measureThroughput, measureTtfb } from './ttfb.mjs';
+import {
+  httpParity,
+  browserParity,
+  compareParity,
+  runtimeParity,
+  compareRuntimeParity,
+} from './verify-parity.mjs';
 
-export async function run(opts = {}) {
+const readmeFile = resolve(root, 'README.md');
+const frameworkResultsName = 'latest.json';
+
+/** Preserve the framework measurements and their explicit incomplete-browser status. */
+async function runFrameworks(opts = {}) {
   const generatedAt = new Date().toISOString();
   const date = generatedAt.slice(0, 10);
   const directory = resolve(root, String(opts.output ?? 'results'));
@@ -130,16 +142,115 @@ export async function run(opts = {}) {
   for (const record of Object.values(result.frameworks)) {
     await writeJson(resolve(directory, record.rawFile), record);
   }
-  await writeJson(resolve(directory, 'latest.json'), result);
+  await writeJson(resolve(directory, frameworkResultsName), result);
   await renderReadme({
-    resultsFile: resolve(directory, 'latest.json'),
-    outputFile: opts.output ? resolve(directory, 'README.md') : resolve(root, 'README.md'),
+    resultsFile: resolve(directory, frameworkResultsName),
+    outputFile: opts.output ? resolve(directory, 'README.md') : readmeFile,
   });
   console.log(`RESULT ${mode} ${result.status}: ${directory}/latest.json`);
 
   if (result.status !== 'complete') process.exitCode = 1;
 
   return result;
+}
+
+/** Measure each runtime in fresh identity and gzip processes using the single Boost build. */
+async function runRuntimes(opts = {}) {
+  const generatedAt = new Date().toISOString();
+  const date = generatedAt.slice(0, 10);
+  const directory = resolve(root, String(opts.output ?? 'results'));
+  const mode = opts.quick ? 'quick' : 'full';
+  const result = {
+    schemaVersion: 1,
+    generatedAt,
+    date,
+    mode,
+    status: 'complete',
+    order: runtimes,
+    runtimes: {},
+  };
+  const parity = {};
+  const stagingDirectory = resolve(root, '.bench', `runtimes-${process.pid}-${Date.now()}`);
+
+  if (!opts['skip-build']) await build(await appConfig('boost'));
+
+  for (const name of runtimes) {
+    const app = await appConfig(name);
+    const { label, runtime, compression } = app;
+    const record = {
+      schemaVersion: 1,
+      runtime: name,
+      engine: runtime,
+      label,
+      generatedAt,
+      mode,
+      status: 'complete',
+      environment: await environment(app),
+      application: { build: 'apps/boost/build', compression },
+      rawFile: `${date}/runtimes/${name}.json`,
+      encodings: {},
+    };
+
+    console.log(`MEASURE runtime ${name} (${mode})`);
+    for (const encoding of ['identity', 'gzip']) {
+      const server = await start(app);
+      try {
+        const settings = { ...opts, encoding };
+        const ttfb = await measureTtfb(app, server, settings);
+        const memory = await measureLeak(server, settings);
+        const throughput = await measureThroughput(app, server, settings);
+
+        record.encodings[encoding] = { ttfb, memory, throughput };
+        record.environment.server = server.runtime;
+
+        if (encoding === 'gzip') record.parity = await runtimeParity(app, server);
+      } finally {
+        await server.stop();
+      }
+    }
+    record.coldStart = await measureColdStart(app, opts);
+    result.runtimes[name] = record;
+    parity[name] = record.parity;
+    await writeJson(resolve(stagingDirectory, record.rawFile), record);
+    console.log(
+      `MEASURED runtime ${name}: complete (identity + gzip, ${record.coldStart.runs} cold starts, 10,000 extra requests per encoding)`,
+    );
+  }
+  compareRuntimeParity(parity);
+  for (const record of Object.values(result.runtimes))
+    await writeJson(resolve(directory, record.rawFile), record);
+
+  await writeJson(resolve(directory, 'latest-runtimes.json'), result);
+  await renderReadme({
+    resultsFile: resolve(directory, frameworkResultsName),
+    outputFile: opts.output ? resolve(directory, 'README.md') : readmeFile,
+  });
+  console.log(`RESULT runtimes ${mode} complete: ${directory}/latest-runtimes.json`);
+
+  return result;
+}
+
+/** Run the requested sections serially, building Boost once when both sections are selected. */
+export async function run(opts = {}) {
+  const names = selectedNames(opts);
+  const includeFrameworks = names.some((name) => frameworks.includes(name));
+  const includeRuntimes = names.some((name) => runtimes.includes(name));
+  const results = {};
+
+  if (opts.framework || opts.runtime)
+    throw new Error(
+      'The orchestrator publishes complete sections; select --frameworks-only or --runtimes-only',
+    );
+
+  if (includeFrameworks) results.frameworks = await runFrameworks(opts);
+
+  if (includeRuntimes)
+    results.runtimes = await runRuntimes({
+      ...opts,
+      'skip-build': opts['skip-build'] || includeFrameworks,
+    });
+
+  return results;
 }
 
 if (isMain(import.meta.url)) await run(options());

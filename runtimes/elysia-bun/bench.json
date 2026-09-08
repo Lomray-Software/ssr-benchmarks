@@ -1,0 +1,10 @@
+{
+  "name": "elysia-bun",
+  "label": "Elysia / Bun",
+  "runtime": "bun",
+  "packages": ["@lomray/vite-ssr-boost", "react-router", "elysia"],
+  "routes": ["/", "/items", "/items/1"],
+  "streaming": true,
+  "compression": "Streaming gzip wrapper (node:zlib, Z_SYNC_FLUSH)",
+  "notes": "Shared apps/boost build; no application source duplication."
+}

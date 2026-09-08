@@ -1,7 +1,9 @@
 import { cliMeasure, isMain, median, numberOption, start } from './lib.mjs';
 
+/** Measure fresh production starts with warm filesystem caches and the common process hook. */
 export async function measureColdStart(app, opts = {}) {
-  const count = numberOption(opts.runs, opts.quick ? 2 : 5, 'runs');
+  const { runs, quick } = opts;
+  const count = numberOption(runs, quick && app.section !== 'runtimes' ? 2 : 5, 'runs');
   const samplesMs = [];
   for (let i = 0; i < count; i++) {
     const server = await start(app);

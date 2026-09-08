@@ -1,0 +1,10 @@
+{
+  "name": "express",
+  "label": "Express / Node",
+  "runtime": "node",
+  "packages": ["@lomray/vite-ssr-boost", "react-router", "express", "compression"],
+  "routes": ["/", "/items", "/items/1"],
+  "streaming": true,
+  "compression": "Express compression (managed server)",
+  "notes": "Shared apps/boost build; no application source duplication."
+}

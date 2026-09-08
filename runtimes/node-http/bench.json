@@ -1,0 +1,10 @@
+{
+  "name": "node-http",
+  "label": "node:http / Node",
+  "runtime": "node",
+  "packages": ["@lomray/vite-ssr-boost", "react-router"],
+  "routes": ["/", "/items", "/items/1"],
+  "streaming": true,
+  "compression": "Boost Node adapter gzip (zlib, incremental flush)",
+  "notes": "Shared apps/boost build; no application source duplication."
+}

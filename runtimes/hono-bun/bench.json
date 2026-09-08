@@ -1,0 +1,10 @@
+{
+  "name": "hono-bun",
+  "label": "Hono / Bun",
+  "runtime": "bun",
+  "packages": ["@lomray/vite-ssr-boost", "react-router", "hono"],
+  "routes": ["/", "/items", "/items/1"],
+  "streaming": true,
+  "compression": "Hono compress() (CompressionStream)",
+  "notes": "Shared apps/boost build; no application source duplication."
+}
