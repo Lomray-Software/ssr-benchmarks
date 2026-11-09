@@ -11,6 +11,6 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-router": "8.3.1",
-    "elysia": "1.4.30"
+    "elysia": "1.4.31"
   }
 }
